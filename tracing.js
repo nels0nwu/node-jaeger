@@ -2,6 +2,7 @@
 
 const process = require('process');
 const opentelemetry = require('@opentelemetry/sdk-node');
+const { SimpleSpanProcessor } = require("@opentelemetry/sdk-trace-base");
 const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumentations-node');
 const { ConsoleSpanExporter } = require('@opentelemetry/sdk-trace-base');
 const { Resource } = require('@opentelemetry/resources');
@@ -16,7 +17,7 @@ const sdk = new opentelemetry.NodeSDK({
   resource: new Resource({
     [SemanticResourceAttributes.SERVICE_NAME]: 'nelsons-service',
   }),
-  traceExporter: jaegerExporter,
+  spanProcessor: new SimpleSpanProcessor(jaegerExporter),
   instrumentations: [getNodeAutoInstrumentations()]
 });
 
