@@ -14,7 +14,7 @@ const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
 const jaegerExporter = new JaegerExporter();
 const sdk = new opentelemetry.NodeSDK({
   resource: new Resource({
-    [SemanticResourceAttributes.SERVICE_NAME]: 'nelsons-service',
+    [SemanticResourceAttributes.SERVICE_NAME]: process.env.SERVICE_NAME || 'nelsons-service',
   }),
   traceExporter: jaegerExporter,
   instrumentations: [getNodeAutoInstrumentations()]
