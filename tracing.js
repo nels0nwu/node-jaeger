@@ -2,12 +2,16 @@
 
 const process = require('process');
 const opentelemetry = require('@opentelemetry/sdk-node');
+const {W3CTraceContextPropagator} = require("@opentelemetry/core");
+const {W3CBaggagePropagator} = require("@opentelemetry/core");
+const {CompositePropagator} = require("@opentelemetry/core");
 const { SimpleSpanProcessor } = require("@opentelemetry/sdk-trace-base");
 const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumentations-node');
 const { ConsoleSpanExporter } = require('@opentelemetry/sdk-trace-base');
 const { Resource } = require('@opentelemetry/resources');
 const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
 const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
+const { JaegerPropagator } = require('@opentelemetry/propagator-jaeger');
 
 // configure the SDK to export telemetry data to the console
 // enable all auto-instrumentations from the meta package
@@ -18,7 +22,8 @@ const sdk = new opentelemetry.NodeSDK({
     [SemanticResourceAttributes.SERVICE_NAME]: process.env.SERVICE_NAME || 'nelsons-service',
   }),
   spanProcessor: new SimpleSpanProcessor(jaegerExporter),
-  instrumentations: [getNodeAutoInstrumentations()]
+  instrumentations: [getNodeAutoInstrumentations()],
+  textMapPropagator: new CompositePropagator({ propagators: [new W3CTraceContextPropagator(), new W3CBaggagePropagator(), new JaegerPropagator()]})
 });
 
 // initialize the SDK and register with the OpenTelemetry API
