@@ -1,0 +1,14 @@
+sequenceDiagram
+actor User
+participant A as First Service
+participant B as Second Service
+participant C as Third Service
+
+User->>A: /request
+A->>B: /request 
+Note over A,B: headers: traceparent=..
+B->>C: /error traceparent=..
+Note over B,C: headers: traceparent=..
+C-->>B: Internal Server Error
+B-->>A: Ok
+A-->>User: Ok
