@@ -7,7 +7,7 @@ participant C as Third Service
 User->>A: /request
 A->>B: /request 
 Note over A,B: headers: traceparent=..
-B->>C: /error traceparent=..
+B->>C: /error
 Note over B,C: headers: traceparent=..
 C-->>B: Internal Server Error
 B-->>A: Ok
