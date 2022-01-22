@@ -14,15 +14,18 @@ app.get('/hello', (req, res) => {
 
 app.get('/request', (req, res) => {
   const target = process.env.TARGET_PATH || 'test';
+  const hostname = process.env.TARGET_HOST || 'localhost';
   const port = process.env.TARGET_PORT || 3000;
-  console.log(req.headers);
+  console.log(`Request headers: ${req.headers}`);
+
+
 
   res.send('make a request!');
-  console.log(`make a request to localhost:${port}/${target}`);
+  console.log(`make a request to ${hostname}:${port}/${target}`);
   const http = require('http')
   const options = {
-    hostname: 'localhost',
-    port: port,
+    hostname,
+    port,
     path: `/${target}`,
     method: 'GET'
   }
@@ -44,6 +47,11 @@ app.get('/request', (req, res) => {
 app.get('/test', (req, res) => {
   console.log(req.headers);
   res.send('testing')
+})
+
+app.get('/error', (req, res) => {
+  console.log(req.headers);
+  res.status(500).send('Something broke!')
 })
 
 app.use('/routethis', routethis);

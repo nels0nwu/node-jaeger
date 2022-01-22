@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.8'
 services:
   jaeger:
     image: "jaegertracing/all-in-one:latest"
@@ -23,3 +23,34 @@ services:
       protocol: tcp
       published: 14268
       target: 14268
+  first:
+    build: .
+    ports:
+    - 5000:3000
+    environment:
+    - "SERVICE_NAME=first-app"
+    - "TARGET_HOST=second"
+    - "TARGET_PATH=request"
+    - "OTEL_EXPORTER_JAEGER_AGENT_HOST=jaeger"
+    depends_on:
+    - jaeger
+  second:
+    build: .
+    ports:
+    - 5001:3000
+    environment:
+    - "SERVICE_NAME=second-app"
+    - "TARGET_HOST=third"
+    - "TARGET_PATH=error"
+    - "OTEL_EXPORTER_JAEGER_AGENT_HOST=jaeger"
+    depends_on:
+    - jaeger
+  third:
+    build: .
+    ports:
+    - 5002:3000
+    environment:
+    - "SERVICE_NAME=third-app"
+    - "OTEL_EXPORTER_JAEGER_AGENT_HOST=jaeger"
+    depends_on:
+    - jaeger
