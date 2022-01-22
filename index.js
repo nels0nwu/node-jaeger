@@ -4,6 +4,8 @@ const express = require('express')
 const app = express()
 const port = process.env.PORT || 3000
 
+const opentelemetry = require('@opentelemetry/api');
+
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
@@ -12,12 +14,20 @@ app.get('/hello', (req, res) => {
   res.send('hello back!')
 })
 
-app.get('/request', (req, res) => {
+app.get('/request', async (req, res) => {
   const target = process.env.TARGET_PATH || 'test';
   const hostname = process.env.TARGET_HOST || 'localhost';
   const port = process.env.TARGET_PORT || 3000;
-  console.log(`Request headers: ${req.headers}`);
+  console.log(req.headers);
 
+  const tracer = opentelemetry.trace.getTracer('example-tracer');
+  const span = tracer.startSpan('waiting for 500ms');
+  span.addEvent('About to wait');
+  await new Promise((resolve, reject) => {
+    setTimeout(resolve, 500);
+  })
+  span.addEvent('Finished waiting');
+  span.end();
 
 
   res.send('make a request!');
@@ -31,7 +41,7 @@ app.get('/request', (req, res) => {
   }
 
   const getrequest = http.request(options, res => {
-    console.log(`statusCode: ${res.statusCode}`)
+    console.log(`recevied statusCode: ${res.statusCode}`)
     res.on('data', d => {
       process.stdout.write(d)
     })
