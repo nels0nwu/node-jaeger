@@ -58,6 +58,10 @@ app.get('/test', (req, res) => {
   console.log(req.headers);
   res.send('testing')
 })
+app.get('/another test', (req, res) => {
+  console.log(req.headers);
+  res.send('testing')
+})
 
 app.get('/error', (req, res) => {
   console.log(req.headers);
